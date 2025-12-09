@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Can you save Christmas, Ameya?</title>
+  style.css
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">🎄 Can you save Christmas, Ameya?</div>
+
+      <div class="stats">
+        <div class="pill" id="scorePill">Candy Canes: <strong id="score">0</strong>/5</div>
+        <div class="pill">Time: <strong id="time">90</strong>s</div>
+        <div class="pill">Best: <strong id="best">0</strong>s</div>
+      </div>
+
+      <div class="buttons">
+        <button id="btnPause" class="pill" type="button">Pause (P)</button>
+        <button id="btnReset" class="pill" type="button">Restart (R)</button>
+      </div>
+    </header>
+
+    <div class="board">
+      <canvas id="game" width="960" height="540" aria-label="Game area"></canvas>
+
+      <!-- Overlays -->
+      <div id="overlayStart" class="overlay">
+        <div class="card">
+          <h2>Welcome, hero!</h2>
+          <p>Help <strong>Ameya</strong> collect candy canes and reach the sleigh 🛷.</p>
+          <p>Controls: ← → run · Space/W/X jump · R restart · P pause</p>
+          <p>Press <span class="kbd">Enter</span> or <strong>click/tap</strong> the canvas to start.</p>
+        </div>
+      </div>
+
+      <div id="overlayPause" class="overlay" hidden>
+        <div class="card"><h2>Paused</h2><p>Press <span class="kbd">P</span> to resume.</p></div>
+      </div>
+
+      <div id="overlayWin" class="overlay" hidden>
+        <div class="card">
+          <h2 style="color:var(--accent2)">🎁 Merry Christmas, Ameya!</h2>
+          <p>You collected all the candy canes and reached the sleigh. Santa salutes you! 🎅🛷</p>
+          <p>Time left: <strong id="finalTime">0</strong>s</p>
+          <p>Press <span class="kbd">Enter</span> or click <strong>Restart</strong> to play again.</p>
+        </div>
+      </div>
+
+      <div id="overlayLose" class="overlay" hidden>
+        <div class="card">
+          <h2 style="color:var(--danger)">Oh no, time ran out!</h2>
+          <p>Collect all 5 candy canes and reach the sleigh.</p>
+        </div>
+      </div>
+
+      <!-- Mobile controls -->
+      <div class="mobile-ctl" aria-label="Mobile controls">
+        <button id="btnLeft" type="button">←</button>
+        <button id="btnJump" type="button">⤒</button>
+        <button id="btnRight" type="button">→</button>
+      </div>
+    </div>
+
+    <footer>← → run · Space/W/X jump · P pause · R restart · Enter start</footer>
+  </div>
+
+  <scriptjs</script>
+</body>
