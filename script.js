@@ -162,6 +162,24 @@ function drawLightsStrip(x,y,w,spacing=18){ for(let i=0;i<w;i+=spacing){ const n
 function draw(){
   drawSnow();
 
+// --- In your draw() function ---
+for (const c of candies) {
+  const wiggle = Math.sin(phase * 2 + c.x * 0.01) * 2;
+
+  // red circle body
+  ctx.fillStyle = '#ff4d4d';
+  ctx.beginPath();
+  ctx.arc(c.x, c.y + wiggle, 8, 0, Math.PI * 2);
+  ctx.fill();
+
+  // white stripe (diagonal) for candy cane look
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(c.x + 6, c.y - 6 + wiggle);
+  ctx.lineTo(c.x + 12, c.y - 12 + wiggle);
+  ctx.stroke();
+
   for(const wall of [leftWall,rightWall]){
     rect(wall.x,wall.y,wall.w,wall.h,'#20344f');
     ctx.fillStyle='#284462'; ctx.fillRect(wall.x,wall.y,wall.w,12);
