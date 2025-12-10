@@ -33,14 +33,53 @@ function drawText(t,x,y,c="#eaf3ff",size=16){ ctx.fillStyle=c; ctx.font=`${size}
 function collide(a,b){ return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y; }
 
 /* ===== Level ===== */
+
+// --- Level data (platforms, walls, spikes, candies) ---
+let platforms, spikes, candies, reindeer;
 let leftWall, rightWall;
-function makeLevel(){
-  platforms=[{x:0,y:500,w:960,h:40},{x:0,y:420,w:260,h:18},{x:290,y:380,w:140,h:18},{x:460,y:340,w:180,h:18},{x:670,y:300,w:180,h:18},{x:860,y:260,w:120,h:18},{x:80,y:260,w:130,h:18},{x:250,y:220,w:110,h:18},{x:390,y:190,w:110,h:18},{x:550,y:160,w:120,h:18}];
-  spikes=[{x:370,y:488,w:70,h:12},{x:760,y:288,w:40,h:12}];
-  candies=[{x:210,y:390},{x:470,y:320},{x:680,y:270},{x:120,y:230},{x:560,y:130}];
-  reindeer={x:900,y:220,w:40,h:30};
-  leftWall={x:-2,y:0,w:10,h:540}; rightWall={x:952,y:0,w:10,h:540};
+
+function makeLevel() {
+  platforms = [
+    { x:0, y:500, w:960, h:40 },
+    { x:0, y:420, w:260, h:18 },
+    { x:290, y:380, w:140, h:18 },
+    { x:460, y:340, w:180, h:18 },
+    { x:670, y:300, w:180, h:18 },
+    { x:860, y:260, w:120, h:18 },
+    { x:80, y:260, w:130, h:18 },
+    { x:250, y:220, w:110, h:18 },
+    { x:390, y:190, w:110, h:18 },
+    { x:550, y:160, w:120, h:18 },
+  ];
+
+  spikes = [
+    { x:370, y:488, w:70, h:12 },
+    { x:760, y:288, w:40, h:12 },
+  ];
+
+  // ✅ Fixed in-bounds positions (visible on screen)
+  candies = [
+    { x:210, y:390 },
+    { x:470, y:320 },
+    { x:680, y:270 },
+    { x:120, y:230 },
+    { x:560, y:130 },
+  ];
+
+  reindeer = { x:900, y:220, w:40, h:30 };
+
+  leftWall  = { x:-2,  y:0, w:10, h:540 };
+  rightWall = { x:952, y:0, w:10, h:540 };
 }
+
+// --- Reset creates level THEN draws first frame ---
+function fullReset() {
+  // ... your player init ...
+  makeLevel();                  // <-- candies created here
+  // ... HUD/overlay setup ...
+  draw();                       // <-- first frame, candies are visible
+}
+
 
 /* ===== Player sprite ===== */
 let playerImg=null, playerImgReady=false, playerScale=1, playerOffsetY=0;
