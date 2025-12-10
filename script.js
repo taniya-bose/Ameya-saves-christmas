@@ -9,6 +9,7 @@ const SPRITE_SCALE_ADJ = 1.08, SPRITE_Y_ADJ = 2;
 /* ===== DOM ===== */
 const $ = id => document.getElementById(id);
 const canvas = $('game'), ctx = canvas.getContext('2d');
+// Ensure internal resolution matches world coordinates
 canvas.width = 960;
 canvas.height = 540;
 
@@ -48,10 +49,20 @@ function collide(a,b){ return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a
 
 /* ===== Level ===== */
 let leftWall, rightWall;
-function,y:500,w:960,h:40},{x:0,y:420,w:260,h:18},{x:290,y:380,w:140,h:18},
+function makeLevel(){
+  platforms=[
+    {x:0,y:500,w:960,h:40},
+    {x:0,y:420,w:260,h:18},{x:290,y:380,w:140,h:18},
     {x:460,y:340,w:180,h:18},{x:670,y:300,w:180,h:18},{x:860,y:260,w:120,h:18},
     {x:80,y:260,w:130,h:18},{x:250,y:220,w:110,h:18},{x:390,y:190,w:110,h:18},{x:550,y:160,w:120,h:18}
-  ===== Player sprite ===== */
+  ];
+  spikes=[{x:370,y:488,w:70,h:12},{x:760,y:288,w:40,h:12}];
+  candies=[{x:210,y:390},{x:470,y:320},{x:680,y:270},{x:120,y:230},{x:560,y:130}];
+  reindeer={x:900,y:220,w:40,h:30};
+  leftWall={x:-2,y:0,w:10,h:540}; rightWall={x:952,y:0,w:10,h:540};
+}
+
+/* ===== Player sprite ===== */
 let playerImg=null, playerImgReady=false, playerScale=1, playerOffsetY=0;
 function loadPlayerImage(){
   const img=new Image();
@@ -109,6 +120,7 @@ function drawCandyCane(x, y) {
   ctx.save();
   ctx.translate(x, y);
 
+  // soft glow
   ctx.globalAlpha = 0.25;
   ctx.fillStyle = '#ffd166';
   ctx.beginPath();
@@ -119,14 +131,16 @@ function drawCandyCane(x, y) {
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
+  // white cane outline
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 3.5;
   ctx.beginPath();
-  ctx.moveTo(0, 8);
+  ctx.moveTo(0, 8);      // stem
   ctx.lineTo(0, -6);
-  ctx.arc(4, -6, 4, Math.PI, Math.PI * 1.5);
+  ctx.arc(4, -6, 4, Math.PI, Math.PI * 1.5); // hook
   ctx.stroke();
 
+  // red stripes
   ctx.strokeStyle = '#ff4d4d';
   ctx.lineWidth = 2.2;
   for (const yLine of [-6, -2, 2, 6]) {
@@ -201,6 +215,7 @@ function update(){
   for(const s of spikes){ if(collide(player,s)) respawn(); }
   if(player.y>540) respawn();
 
+  // Collect candies
   candies=candies.filter(c=>{
     const hit=Math.abs(player.x+player.w/2-c.x)<16 && Math.abs(player.y+player.h/2-c.y)<16;
     if(hit){
@@ -245,6 +260,7 @@ function drawLightsStrip(x,y,w,spacing=18){
 function draw(){
   drawSnow();
 
+  // Walls
   for(const wall of [leftWall,rightWall]){
     rect(wall.x,wall.y,wall.w,wall.h,'#20344f');
     ctx.fillStyle='#284462'; ctx.fillRect(wall.x,wall.y,wall.w,12);
@@ -253,11 +269,13 @@ function draw(){
     for(const ly of [40,120,200,280,360,440]) drawLightsStrip(cx,ly,1,1);
   }
 
+  // Platforms
   for(const p of platforms){
     rect(p.x,p.y,p.w,p.h,'#244466'); ctx.fillStyle='#2e5985'; ctx.fillRect(p.x,p.y,p.w,6);
     drawLightsStrip(p.x+6,p.y+4,p.w-12);
   }
 
+  // Spikes
   for(const s of spikes){
     ctx.fillStyle='#5ec6ff';
     for(let i=0;i<s.w;i+=10){
@@ -267,8 +285,10 @@ function draw(){
     }
   }
 
+  // Candies (visible)
   drawCandies();
 
+  // Sleigh + Reindeer
   ctx.fillStyle='#a32727'; rect(reindeer.x-36,reindeer.y+8,36,14,'#a32727');
   ctx.fillStyle='#8b5a2b'; rect(reindeer.x-30,reindeer.y+20,32,6,'#8b5a2b');
   ctx.fillStyle='#a36b3a'; rect(reindeer.x,reindeer.y,reindeer.w,reindeer.h,'#a36b3a');
@@ -277,8 +297,8 @@ function draw(){
 
   // ---- Tree anchored to ground ----
   const tx = 860;
-  const groundY = 500; // main floor top
-  const ty = groundY - 196; // trunk bottom sits on ground
+  const groundY = 500;       // main floor top
+  const ty = groundY - 196;  // trunk bottom sits on ground
   ctx.fillStyle='#2e6b3a';
   ctx.beginPath(); ctx.moveTo(tx+40,ty); ctx.lineTo(tx,ty+60); ctx.lineTo(tx+80,ty+60); ctx.closePath(); ctx.fill();
   ctx.beginPath(); ctx.moveTo(tx+40,ty+50); ctx.lineTo(tx-20,ty+120); ctx.lineTo(tx+100,ty+120); ctx.closePath(); ctx.fill();
@@ -287,6 +307,7 @@ function draw(){
   ctx.fillStyle='#ffd166'; ctx.beginPath(); ctx.arc(tx+40,ty-6,6,0,Math.PI*2); ctx.fill();
   drawLightsStrip(tx+10,ty+70,60,16); drawLightsStrip(tx,ty+130,80,16);
 
+  // Player
   if(playerImgReady && playerImg){
     ctx.save();
     const drawX=player.x + (player.facing===-1 ? player.w : 0);
@@ -311,3 +332,25 @@ function tryJump(){
   if(canGround){
     player.vy=-JUMP_POWER; player.onGround=false; player.coyote=0; player.doubleLeft=MAX_DOUBLE_JUMP; return;
   }
+  if(player.doubleLeft>0){ player.vy=-JUMP_POWER*0.9; player.doubleLeft--; }
+}
+
+/* ===== Input ===== */
+window.addEventListener('keydown', e=>{
+  const k=e.key.toLowerCase();
+  if(!running && (k==='enter'||k==='arrowleft'||k==='arrowright'||k==='a'||k==='d'||k===' '||k==='w'||k==='x')) start();
+  if(k==='p') pauseToggle();
+  if(k==='r'){ fullReset(); start(); }
+  keys[e.key]=true;
+  if([' ','space','w','x'].includes(k)) tryJump();
+});
+window.addEventListener('keyup', e=>{ keys[e.key]=false; });
+canvas.addEventListener('pointerdown', ()=>{ if(!running) start(); });
+btnPause.onclick=()=>pauseToggle();
+btnReset.onclick=()=>{ fullReset(); start(); };
+btnLeft.onmousedown=()=>{ keys['ArrowLeft']=true; };  btnLeft.onmouseup =()=>{ keys['ArrowLeft']=false; };
+btnRight.onmousedown=()=>{ keys['ArrowRight']=true; }; btnRight.onmouseup=()=>{ keys['ArrowRight']=false; };
+btnJump.onclick=()=>tryJump();
+
+/* ===== Boot ===== */
+fullReset();
